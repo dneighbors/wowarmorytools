@@ -15,9 +15,9 @@ require 'ostruct'
 require 'cgi'
 require 'yaml'
 
-# Color Stuff
+# Colorizes text if CLICOLOR is defined in the environment.
 def colorize(text, color_code)
-  "#{color_code}#{text}\e[0m"
+  ENV.include?("CLICOLOR") ? "#{color_code}#{text}\e[0m" : text
 end
 
 def white(text); colorize(text, "\e[37m"); end
@@ -175,7 +175,10 @@ def yellow(text); colorize(text, "\e[33m"); end
   options.check_realm_status = false
   optp = OptionParser.new do |opts|
     opts.banner = "Usage: #{$0} [options]"
-  
+
+    opts.separator ""
+    opts.separator "Filtering Options:"
+
     opts.on("-r", "--realm REALM", "Filter by REALM (req. for character/guild info)") do |rlm|
       options.realm = rlm
     end
@@ -189,10 +192,13 @@ def yellow(text); colorize(text, "\e[33m"); end
       options.check_realm_status = true
     end
     
-    opts.on("-y", "--yaml", "Provide yaml output") do |y|
+    opts.separator ""
+    opts.separator "Common Options:"
+    
+    opts.on_tail("-y", "--yaml", "Provide yaml output") do |y|
       options.yaml_output = true
     end
-  
+    
     opts.on_tail("-h", "--help", "Show this help message.") do |v|
       puts opts
       options.show_help = true
@@ -214,7 +220,7 @@ def yellow(text); colorize(text, "\e[33m"); end
       puts "Getting realm status for #{options.realm}."
       show_realm_status(options.realm, options.yaml_output)
     else
-      puts "Nothing to get data about!", "", optp
+      puts "I don't know what you want me to find out about #{options.realm.capitalize}!", "", optp
     end
   elsif(options.check_realm_status) then
     show_realm_status(options.realm, options.yaml_output)
