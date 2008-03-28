@@ -1,12 +1,8 @@
 #!/usr/bin/env ruby
 
-# =========================================
-# = World of Warcraft Character Info Tool =
-# =========================================
+# = World of Warcraft Character Info Tool
 # 
-#   Grabs data from the WoW Armory.
-# 
-# =========================================
+# Grabs data from the WoW Armory.
 
 require 'rexml/document'
 require 'net/http'
@@ -27,7 +23,7 @@ def yellow(text); colorize(text, "\e[33m"); end
 
 # End color stuff
 
-# module WorldOfWarcraft
+module WorldOfWarcraft
   class Character
     attr_accessor :realm, :battle_group, :cclass, :faction, :gender, :guild
   
@@ -84,13 +80,14 @@ def yellow(text); colorize(text, "\e[33m"); end
     http = Net::HTTP.new('eu.wowarmory.com', 80)
     path = "/character-sheet.xml?r=#{realm}&n=#{name}"
     headers = {
-      'User-agent' => 'Firefox/2.0.0.1'
+      'User-agent' => 'Firefox/2.0.0.1' # Have to specify the firefox UA or blizz gives us html.
     }
     resp = http.get(path, headers)
-
     xmldoc = REXML::Document.new(resp.body)
   end
 
+  # Grabs the XML for a certain character on a realm, then whacks it into a class.
+  # Also optionally provides YAML output.
   def show_char_info(realm, char, yaml=false)
     xmldoc = load_character_xml(realm, char)
     xmldoc.each_element("/page/characterInfo/character") do |char|
@@ -232,4 +229,4 @@ def yellow(text); colorize(text, "\e[33m"); end
     puts "I don't know what you want me to do!", "", optp
   end
   # End option-parsing stuff
-# end
+end
